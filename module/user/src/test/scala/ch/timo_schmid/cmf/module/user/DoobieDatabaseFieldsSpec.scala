@@ -2,11 +2,11 @@ package ch.timo_schmid.cmf.module.user
 
 import cats.Id
 import ch.timo_schmid.cmf.db.doobie.DoobieDatabaseFields
+import ch.timo_schmid.cmf.module.user.User.UserId
 import doobie.*
 import doobie.implicits.*
-import org.specs2.mutable.Specification
-
 import java.util.UUID
+import org.specs2.mutable.Specification
 
 class DoobieDatabaseFieldsSpec extends Specification {
 
@@ -15,7 +15,7 @@ class DoobieDatabaseFieldsSpec extends Specification {
     "return Fragment for all fields of a user" in {
       DoobieDatabaseFields[
         User
-      ].fields.toString ==== """Fragment("userId, login, email")"""
+      ].fields.toString ==== """Fragment("id, login, email")"""
     }
 
     "return Fragment for all values of a user" in {
@@ -23,7 +23,7 @@ class DoobieDatabaseFieldsSpec extends Specification {
         User[Id](UserId(UUID.randomUUID()), "foobar", Email("foo", "bar.com"))
       DoobieDatabaseFields[User]
         .setValues(user)
-        .toString ==== """Fragment("userId = ?, login = ?, email = ?")"""
+        .toString ==== """Fragment("id = ?, login = ?, email = ?")"""
     }
 
     "return Framgment for all values of a user" in {

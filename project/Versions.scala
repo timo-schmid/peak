@@ -11,7 +11,7 @@ object Versions {
   val Munit             = "0.7.29"
   val Postgresql        = "42.3.6"
   val PureConfig        = "0.17.1"
-  val Scala             = "3.2.0"
+  val Scala             = "3.3.1"
   val ScalaCheck        = "1.15.4"
   val Shapeless         = "3.1.0"
   val Specs2            = "4.16.1"

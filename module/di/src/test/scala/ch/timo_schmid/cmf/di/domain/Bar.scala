@@ -1,8 +1,10 @@
 package ch.timo_schmid.cmf.di.domain
 
-import cats.effect.{IO, Resource}
-import ch.timo_schmid.cmf.di.Scope.{Production, Testing}
-import ch.timo_schmid.cmf.di.{Module, Scope}
+import cats.effect.IO
+import ch.timo_schmid.cmf.di.Module
+import ch.timo_schmid.cmf.di.Scope
+import ch.timo_schmid.cmf.di.Scope.Production
+import ch.timo_schmid.cmf.di.Scope.Testing
 
 class Bar(scope: Scope):
   def bar: Int =

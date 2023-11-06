@@ -2,11 +2,14 @@ package ch.timo_schmid.cmf.di.util
 
 import cats.effect.IO
 import cats.effect.testing.specs2.CatsEffect
-import cats.effect.unsafe.{IORuntime, IORuntimeConfig, Scheduler}
-import org.specs2.concurrent.ExecutionEnv
-import org.specs2.execute.{AsResult, Failure, Result}
-
+import cats.effect.unsafe.IORuntime
+import cats.effect.unsafe.IORuntimeConfig
+import cats.effect.unsafe.Scheduler
 import java.util.concurrent.Executors
+import org.specs2.concurrent.ExecutionEnv
+import org.specs2.execute.AsResult
+import org.specs2.execute.Failure
+import org.specs2.execute.Result
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.*
 
@@ -26,6 +29,7 @@ trait CatsEffectIO(ee: ExecutionEnv) extends CatsEffect:
       () => {
         ee.shutdown()
         cachedThreadPool.shutdownNow()
+        ()
       },
       IORuntimeConfig()
     )

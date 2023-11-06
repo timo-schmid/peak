@@ -1,9 +1,10 @@
 package ch.timo_schmid.cmf.di.domain
 
 import cats.effect.IO
-import cats.effect.kernel.Resource
-import ch.timo_schmid.cmf.di.Scope.{Production, Testing}
-import ch.timo_schmid.cmf.di.{Module, Scope}
+import ch.timo_schmid.cmf.di.Module
+import ch.timo_schmid.cmf.di.Scope
+import ch.timo_schmid.cmf.di.Scope.Production
+import ch.timo_schmid.cmf.di.Scope.Testing
 
 class Foo(scope: Scope):
   def foo: Int = scope.fooValue

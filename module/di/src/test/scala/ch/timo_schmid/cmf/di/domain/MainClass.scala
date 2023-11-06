@@ -2,8 +2,9 @@ package ch.timo_schmid.cmf.di.domain
 
 import cats.effect.IO
 import cats.implicits._
-import ch.timo_schmid.cmf.di.Scope.{Production, Testing}
-import ch.timo_schmid.cmf.di.{Injector, Module}
+import ch.timo_schmid.cmf.di.Module
+import ch.timo_schmid.cmf.di.Scope.Production
+import ch.timo_schmid.cmf.di.Scope.Testing
 
 trait MainClass:
   def run: IO[Int]

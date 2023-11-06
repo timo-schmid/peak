@@ -1,21 +1,14 @@
 package ch.timo_schmid.cmf.di
 
-import cats.effect.Sync
-import cats.effect.IO
-import cats.effect.Resource
-import org.specs2.ScalaCheck
-import org.specs2.execute.AsResult
-import org.specs2.execute.Result
-import org.specs2.matcher.MatchResult
-import org.specs2.mutable.Specification
-import org.scalacheck.*
-import org.scalacheck.Arbitrary.arbitrary
-import org.specs2.concurrent.ExecutionEnv
-
-import scala.concurrent.duration.*
 import Scope.*
+import cats.effect.IO
 import ch.timo_schmid.cmf.di.domain.MainClass
 import ch.timo_schmid.cmf.di.util.CatsEffectIO
+import org.scalacheck.*
+import org.specs2.ScalaCheck
+import org.specs2.concurrent.ExecutionEnv
+import org.specs2.matcher.MatchResult
+import org.specs2.mutable.Specification
 import org.specs2.scalacheck.ScalaCheckFunction2
 
 class ModuleSpec(ee: ExecutionEnv) extends Specification with CatsEffectIO(ee) with ScalaCheck:

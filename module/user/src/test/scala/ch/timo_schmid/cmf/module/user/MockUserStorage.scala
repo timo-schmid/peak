@@ -1,18 +1,15 @@
 package ch.timo_schmid.cmf.module.user
 
 import cats.Id
-import cats.implicits.*
 import cats.effect.Sync
-import cats.effect.kernel.Concurrent
-import ch.timo_schmid.cmf.api.Storage
-import ch.timo_schmid.cmf.rest.*
-import ch.timo_schmid.cmf.module.user.User
-import ch.timo_schmid.cmf.db.{Database, DatabaseConnection}
+import cats.implicits.*
+import ch.timo_schmid.cmf.core.api.Storage
+import ch.timo_schmid.cmf.core.entity.Merge
+import ch.timo_schmid.cmf.module.user.User.UserId
 import fs2.*
-
 import java.util.UUID
 
-class MockUserStorage[F[_]: Sync](using Merge[User]) extends Storage[F, UserId, User] {
+class MockUserStorage[F[_]: Sync](using Merge[User]) extends Storage[F, User, UserId] {
 
   private val mockUsers: Seq[User[Id]] = Seq(
     User[Id](
@@ -32,7 +29,7 @@ class MockUserStorage[F[_]: Sync](using Merge[User]) extends Storage[F, UserId, 
 
   override def byKey(key: UserId): F[Option[User.Full]] =
     list
-      .filter(_.userId == key)
+      .filter(_.id == key)
       .head
       .compile
       .toList

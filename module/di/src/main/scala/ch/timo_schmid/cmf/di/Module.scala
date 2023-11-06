@@ -1,6 +1,5 @@
 package ch.timo_schmid.cmf.di
 
-import cats.effect.IO
 import cats.effect.Resource
 
 trait Module[F[_], Scope, Dependency]:

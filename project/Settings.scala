@@ -13,64 +13,48 @@ object Settings {
     buildInfoPackage := s"ch.timo_schmid.cmf.${name.value.replaceAll("-", ".")}"
   )
 
-  val Cms: SbtSettings = Common ++ Seq(
-    name := "cms"
+  val Demo: SbtSettings = Common ++ Seq(
+    name := "demo"
   )
 
   object Module {
 
     object Core {
 
-      val Api: SbtSettings = Common ++ Seq(
-        name := "module-core-api"
-      )
+      val Api: SbtSettings = Common
+
+      val Entity: SbtSettings = Common
 
     }
 
     object Db {
 
-      val Api: SbtSettings = Common ++ Seq(
-        name := "module-db-api"
-      )
+      val Api: SbtSettings = Common
 
-      val Doobie: SbtSettings = Common ++ Seq(
-        name := "module-db-doobie"
-      )
+      val Doobie: SbtSettings = Common
 
     }
 
-    val Di: SbtSettings = Common ++ Seq(
-      name := "module-di"
-    )
+    val Di: SbtSettings = Common
 
     object Log {
 
-      val Slf4j: SbtSettings = Common ++ Seq(
-        name := "module-log-slf4j"
-      )
+      val Slf4j: SbtSettings = Common
 
     }
 
-    val User: SbtSettings = Common ++ Seq(
-      name := "module-user"
-    )
+    val User: SbtSettings = Common
 
     object Rest {
 
-      val Api: SbtSettings = Common ++ Seq(
-        name := "module-rest-api"
-      )
+      val Api: SbtSettings = Common
 
-      val Http4s: SbtSettings = Common ++ Seq(
-        name := "module-rest-http4s"
-      )
+      val Http4s: SbtSettings = Common
 
     }
 
   }
 
-  val Root: SbtSettings = Common ++ Seq(
-    name := "cmf"
-  )
+  val Root: SbtSettings = Common
 
 }

@@ -1,61 +1,31 @@
 package ch.timo_schmid.cmf.module.user
 
 import cats.Id
-import cats.Show
-import cats.data.Tuple2K
-import cats.effect.{Concurrent, Sync, Async}
-import ch.timo_schmid.cmf.api.*
-import ch.timo_schmid.cmf.db.*
-import ch.timo_schmid.cmf.db.doobie.*
-import ch.timo_schmid.cmf.rest.*
-import ch.timo_schmid.cmf.rest.http4s.*
-import _root_.doobie.*
-import _root_.doobie.implicits.*
+import ch.timo_schmid.cmf.core.entity.Iso
+import ch.timo_schmid.cmf.core.entity.Key
+import ch.timo_schmid.cmf.db.DatabaseTable
+import ch.timo_schmid.cmf.module.user.User.UserId
+import ch.timo_schmid.cmf.rest.http4s.REST
+import java.util.UUID
 import org.http4s.EntityDecoder
 import org.http4s.circe.CirceEntityCodec.*
-import io.circe.generic.auto.*
-import shapeless3.deriving.~>
-
-import java.util.UUID
 
 case class User[F[_]](
-    userId: F[UserId],
+    id: F[UserId],
     login: F[String],
     email: F[Email]
-) derives Merge,
-      DoobieDatabaseFields
+) derives REST
 
-object User:
+object User extends AllInstances[User, UserId]:
 
-  type Full    = User[Id]
-  type Partial = User[Option]
+  opaque type UserId = UUID
 
-  given toPartial(using fk: FunctorK[User]): ToPartial[User] =
-    full => fk.mapK[Id, Option](full)([A] => (a: Id[A]) => Some[A](a))
+  object UserId extends Opaque.UUID[UserId]
 
-  given showUserId: Show[UserId] =
-    userId => userId.toString
+  given Iso[UserId, UUID] = Iso[UserId, UUID]
 
-  given userKey: Key[User, UserId] =
-    new Key[User, UserId]:
+  given key: Key[User, UserId] =
+    Key.UUID[User, UserId](_.id)
 
-      override def key(entity: User[Id]): UserId =
-        entity.userId
-
-      override def unapply(string: String): Option[UserId] =
-        UserId.unapply(string)
-
-  given storage[F[_]: Sync](using
-      Database[F, ConnectionIO]
-  ): Storage[F, UserId, User] =
-    new DoobieStorage[F, UserId, User]
-
-  given restHttp4sRoutes[F[_]: Async: Sync](using
-      Database[F, ConnectionIO]
-  ): RESTHttp4sRoutes[F, UserId, User] =
-    given RESTHttp4sHandler[F, UserId, User] =
-      new RESTHttp4sHandler[F, UserId, User]
-    new RESTHttp4sRoutes[F, UserId, User]
-
-  given dbQueries: DatabaseQueries[UserId, User[Id]] =
-    new DoobieDatabaseQueries[UserId, User]
+  override given table: DatabaseTable[User, UserId] =
+    DatabaseTable[User, UserId]("users")

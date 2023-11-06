@@ -3,8 +3,6 @@ package ch.timo_schmid.cmf.module.user
 import cats._
 import cats.implicits.*
 import doobie.*
-import doobie.implicits.*
-import doobie.postgres.implicits.*
 import io.circe._
 import io.circe.Decoder.Result
 
