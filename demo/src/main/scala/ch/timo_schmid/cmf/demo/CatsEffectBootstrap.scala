@@ -2,7 +2,6 @@ package ch.timo_schmid.cmf.demo
 
 import cats.Show
 import cats.effect.*
-import cats.effect.ExitCode.Success
 import cats.effect.IO.*
 import cats.implicits.*
 import ch.timo_schmid.cmf.core.api.Bootstrap
@@ -21,27 +20,12 @@ abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
 ) extends IOApp:
 
   override def run(args: List[String]): IO[ExitCode] =
-    startServerFiber(args)
-      .flatMap(_.join)
-      .flatMap {
-        case Outcome.Succeeded(mainLoopFiber) =>
-          mainLoopFiber
-            .flatMap(_.join)
-            .flatMap {
-              case Outcome.Succeeded(exitCode) =>
-                exitCode
-              case Outcome.Errored(e)          =>
-                IO.println(s"Main loop: Error: ${e.getMessage}") *> IO.pure(ExitCode.Error)
-              case Outcome.Canceled()          =>
-                IO.println(s"Cancelled") *> IO.pure(ExitCode.Error)
-            }
-        case Outcome.Errored(e)               =>
-          IO.println(s"Error: ${e.getMessage}") *> IO.pure(ExitCode.Error)
-        case Outcome.Canceled()               =>
-          IO.println(s"Cancelled") *> IO.pure(ExitCode.Error)
+    serverResource(args)
+      .use { case (log, _, _, _) =>
+        keepServiceRunning(log)
       }
 
-  def startServerFiber(args: List[String]): IO[FiberIO[FiberIO[ExitCode]]] =
+  def serverResource(args: List[String]): Resource[IO, (Logger[IO], Config, Clients, Services)] =
     loggerProvider
       .create(getClass)
       .flatTap(
@@ -57,24 +41,20 @@ abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
           _        <- info(log)(s"Created services: ${services.show}")
         } yield (log, config, clients, services)
       }
-      .use { case (log, _, _, _) =>
-        serviceRunningFiber(log)
-      }
-      .start
 
-  private def serviceRunningFiber(log: Logger[IO]): IO[FiberIO[ExitCode]] =
+  private def keepServiceRunning(log: Logger[IO]): IO[ExitCode] =
     runService(log)
       .handleErrorWith(errorHandler(log))
 
-  private def runService(log: Logger[IO]): IO[FiberIO[ExitCode]] =
-    (for {
+  private def runService(log: Logger[IO]): IO[ExitCode] =
+    for {
       _ <- log.info(s"Running ${buildInfo.name} version ${buildInfo.version}")
       _ <- never
-    } yield ExitCode.Success).start
+    } yield ExitCode.Success
 
-  private def errorHandler(log: Logger[IO])(error: Throwable): IO[FiberIO[ExitCode]] =
-    log.info(error.getMessage) *>
-      pure(ExitCode.Error).start
+  private def errorHandler(log: Logger[IO])(error: Throwable): IO[ExitCode] =
+    log.error(error)(error.getMessage) *>
+      pure(ExitCode.Error)
 
   private def info(log: Logger[IO])(message: => String): Resource[IO, Unit] =
     Resource.eval(log.info(message))
