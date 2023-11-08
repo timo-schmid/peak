@@ -1,9 +1,11 @@
-import Settings.SbtSettings
 import org.typelevel.sbt.tpolecat.TpolecatPlugin
 import sbt.*
 import sbtbuildinfo.BuildInfoPlugin
 
 object Build {
+
+  type SbtModules  = Seq[ModuleID]
+  type SbtSettings = Seq[Setting[?]]
 
   val Root: Project =
     Project("cmf", file("."))

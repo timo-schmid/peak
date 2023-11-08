@@ -1,10 +1,9 @@
+import Build.SbtSettings
 import sbt.*
 import sbt.Keys.*
 import sbtbuildinfo.BuildInfoKeys.*
 
 object Settings {
-
-  type SbtSettings = Seq[Setting[?]]
 
   val Common: SbtSettings = Seq(
     version          := "0.1.0-SNAPSHOT",
@@ -13,8 +12,10 @@ object Settings {
     buildInfoPackage := s"ch.timo_schmid.cmf.${name.value.replaceAll("-", ".")}"
   )
 
-  val Demo: SbtSettings = Common ++ Seq(
-    name := "demo"
+  val Demo: SbtSettings = Common
+
+  val IntegrationTests: SbtSettings = Common ++ Seq(
+    libraryDependencies ++= Dependencies.IntegrationTests
   )
 
   object Module {

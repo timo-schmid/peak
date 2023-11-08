@@ -10,6 +10,9 @@ lazy val `demo` =
       `module-rest-http4s`
     )
 
+lazy val `integration-tests` =
+  service("integration-tests", Settings.IntegrationTests)
+
 lazy val `module-core-api` =
   module("core-api", Settings.Module.Core.Api)
 
@@ -50,6 +53,7 @@ lazy val `root` =
   Root
     .aggregate(
       `demo`,
+      `integration-tests`,
       `module-core-api`,
       `module-db-api`,
       `module-db-doobie`,
