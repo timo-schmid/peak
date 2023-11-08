@@ -16,8 +16,11 @@ object Dependencies {
       Shapeless ++
       Testing
 
+  lazy val Pureconfig: SbtModules =
+    LibraryGroups.Pureconfig
+
   lazy val IntegrationTests: SbtModules =
-    Specs2.map(_ % Test)
+    (EmbeddedPostgres ++ Specs2).map(_ % Test)
 
   lazy val Testing: SbtModules =
     Specs2.map(_ % Test)

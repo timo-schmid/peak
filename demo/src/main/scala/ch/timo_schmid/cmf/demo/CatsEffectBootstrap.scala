@@ -21,6 +21,27 @@ abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
 ) extends IOApp:
 
   override def run(args: List[String]): IO[ExitCode] =
+    startServerFiber(args)
+      .flatMap(_.join)
+      .flatMap {
+        case Outcome.Succeeded(mainLoopFiber) =>
+          mainLoopFiber
+            .flatMap(_.join)
+            .flatMap {
+              case Outcome.Succeeded(exitCode) =>
+                exitCode
+              case Outcome.Errored(e)          =>
+                IO.println(s"Main loop: Error: ${e.getMessage}") *> IO.pure(ExitCode.Error)
+              case Outcome.Canceled()          =>
+                IO.println(s"Cancelled") *> IO.pure(ExitCode.Error)
+            }
+        case Outcome.Errored(e)               =>
+          IO.println(s"Error: ${e.getMessage}") *> IO.pure(ExitCode.Error)
+        case Outcome.Canceled()               =>
+          IO.println(s"Cancelled") *> IO.pure(ExitCode.Error)
+      }
+
+  def startServerFiber(args: List[String]): IO[FiberIO[FiberIO[ExitCode]]] =
     loggerProvider
       .create(getClass)
       .flatTap(
@@ -28,7 +49,7 @@ abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
       )
       .flatMap { log =>
         for {
-          config   <- bootstrap.loadConfig
+          config   <- bootstrap.loadConfig(buildInfo.name)
           _        <- info(log)(s"Loaded configuration: ${config.show}")
           clients  <- bootstrap.createClients(config)
           _        <- info(log)(s"Created clients: ${clients.show}")
@@ -36,23 +57,24 @@ abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
           _        <- info(log)(s"Created services: ${services.show}")
         } yield (log, config, clients, services)
       }
-      .use { case (log, config, clients, services) =>
-        runService(config, clients, services)(log)
-          .handleErrorWith(errorHandler(log))
+      .use { case (log, _, _, _) =>
+        serviceRunningFiber(log)
       }
+      .start
 
-  def runService(
-      config: Config,
-      clients: Clients,
-      services: Services
-  )(log: Logger[IO]): IO[ExitCode] =
-    log.info(s"Running ${buildInfo.name} version ${buildInfo.version}") *>
-      never *>
-      ExitCode.Success.pure[IO]
+  private def serviceRunningFiber(log: Logger[IO]): IO[FiberIO[ExitCode]] =
+    runService(log)
+      .handleErrorWith(errorHandler(log))
 
-  def errorHandler(log: Logger[IO])(error: Throwable): IO[ExitCode] =
+  private def runService(log: Logger[IO]): IO[FiberIO[ExitCode]] =
+    (for {
+      _ <- log.info(s"Running ${buildInfo.name} version ${buildInfo.version}")
+      _ <- never
+    } yield ExitCode.Success).start
+
+  private def errorHandler(log: Logger[IO])(error: Throwable): IO[FiberIO[ExitCode]] =
     log.info(error.getMessage) *>
-      pure(ExitCode.Error)
+      pure(ExitCode.Error).start
 
   private def info(log: Logger[IO])(message: => String): Resource[IO, Unit] =
     Resource.eval(log.info(message))

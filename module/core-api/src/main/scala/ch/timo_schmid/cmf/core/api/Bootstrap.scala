@@ -4,7 +4,7 @@ import cats.effect.Resource
 
 trait Bootstrap[F[_], Config, Clients, Services] {
 
-  def loadConfig: Resource[F, Config]
+  def loadConfig(namespace: String): Resource[F, Config]
 
   def createClients(config: Config): Resource[F, Clients]
 
@@ -21,8 +21,8 @@ object Bootstrap {
   ): Bootstrap[F, Config, Clients, Services] =
     new Bootstrap[F, Config, Clients, Services]:
 
-      override def loadConfig: Resource[F, Config] =
-        configProvider.load
+      override def loadConfig(namespace: String): Resource[F, Config] =
+        configProvider.load(namespace: String)
 
       override def createClients(config: Config): Resource[F, Clients] =
         clientProvider.create(config)

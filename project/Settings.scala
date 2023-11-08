@@ -20,6 +20,14 @@ object Settings {
 
   object Module {
 
+    object Config {
+
+      val Pureconfig: SbtSettings = Common ++ Seq(
+        libraryDependencies ++= Dependencies.Pureconfig
+      )
+
+    }
+
     object Core {
 
       val Api: SbtSettings = Common

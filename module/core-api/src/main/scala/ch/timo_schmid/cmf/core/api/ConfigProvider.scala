@@ -4,10 +4,10 @@ import cats.*
 import cats.effect.Resource
 import cats.implicits.*
 
-trait ConfigProvider[F[_], Config] extends Provider[F, Unit, Config]:
+trait ConfigProvider[F[_], Config] extends Provider[F, String, Config]:
 
-  def load: Resource[F, Config] =
-    create(())
+  def load(namespace: String): Resource[F, Config] =
+    create(namespace)
 
 object ConfigProvider:
 

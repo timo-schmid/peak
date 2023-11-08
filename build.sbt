@@ -3,6 +3,7 @@ import Build.*
 lazy val `demo` =
   service("demo", Settings.Demo)
     .dependsOn(
+      `module-config-pureconfig`,
       `module-db-doobie`,
       `module-rest-api`,
       `module-log-slf4j`,
@@ -12,6 +13,11 @@ lazy val `demo` =
 
 lazy val `integration-tests` =
   service("integration-tests", Settings.IntegrationTests)
+    .dependsOn(`demo`)
+
+lazy val `module-config-pureconfig` =
+  module("config-pureconfig", Settings.Module.Config.Pureconfig)
+    .dependsOn(`module-core-api`)
 
 lazy val `module-core-api` =
   module("core-api", Settings.Module.Core.Api)
@@ -54,6 +60,7 @@ lazy val `root` =
     .aggregate(
       `demo`,
       `integration-tests`,
+      `module-config-pureconfig`,
       `module-core-api`,
       `module-db-api`,
       `module-db-doobie`,

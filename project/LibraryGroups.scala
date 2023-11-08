@@ -23,6 +23,12 @@ object LibraryGroups {
       "org.tpolecat" %% "doobie-postgres" % Versions.Doobie
     )
 
+  lazy val EmbeddedPostgres: SbtModules =
+    Seq(
+      "io.zonky.test"          % "embedded-postgres"              % Versions.EmbeddedPostgres,
+      "io.zonky.test.postgres" % "embedded-postgres-binaries-bom" % Versions.Postgres
+    )
+
   lazy val Flyway: SbtModules =
     Seq(
       "org.flywaydb" % "flyway-core" % Versions.Flyway
@@ -48,7 +54,14 @@ object LibraryGroups {
 
   lazy val Postgresql: SbtModules =
     Seq(
-      "org.postgresql" % "postgresql" % Versions.Postgresql
+      "org.postgresql" % "postgresql" % Versions.PostgresqlDriver
+    )
+
+  lazy val Pureconfig: SbtModules =
+    Seq(
+      "com.github.pureconfig" %% "pureconfig-core"        % Versions.PureConfig,
+      "com.github.pureconfig" %% "pureconfig-cats-effect" % Versions.PureConfig,
+      "com.github.pureconfig" %% "pureconfig-ip4s"        % Versions.PureConfig
     )
 
   lazy val Shapeless: SbtModules =
