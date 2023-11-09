@@ -3,6 +3,11 @@ import sbt.*
 
 object LibraryGroups {
 
+  lazy val Cats: SbtModules =
+    Seq(
+      "org.typelevel" %% "cats-core" % Versions.Cats
+    )
+
   lazy val CatsEffect: SbtModules =
     Seq(
       "org.typelevel" %% "cats-effect" % Versions.CatsEffect
@@ -34,11 +39,26 @@ object LibraryGroups {
       "org.flywaydb" % "flyway-core" % Versions.Flyway
     )
 
-  lazy val Http4s: SbtModules =
+  lazy val Fs2: SbtModules =
+    Seq(
+      "co.fs2" %% "fs2-core" % Versions.Fs2
+    )
+
+  lazy val Http4sClient: SbtModules =
+    Seq(
+      "org.http4s" %% "http4s-client" % Versions.Http4s
+    )
+
+  lazy val Http4sServer: SbtModules =
     Seq(
       "org.http4s" %% "http4s-dsl"          % Versions.Http4s,
       "org.http4s" %% "http4s-circe"        % Versions.Http4s,
       "org.http4s" %% "http4s-ember-server" % Versions.Http4s
+    )
+
+  lazy val Ip4s: SbtModules =
+    Seq(
+      "com.comcast" %% "ip4s-core" % Versions.Ip4s
     )
 
   lazy val Log4Cats: SbtModules =

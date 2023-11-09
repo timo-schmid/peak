@@ -15,6 +15,13 @@ lazy val `integration-tests` =
   service("integration-tests", Settings.IntegrationTests)
     .dependsOn(`demo`)
 
+lazy val `module-client-http4s` =
+  module("client-http4s", Settings.Module.Client.Http4s)
+    .dependsOn(`module-codec-circe`)
+
+lazy val `module-codec-circe` =
+  module("codec-circe", Settings.Module.Codec.Circe)
+
 lazy val `module-config-pureconfig` =
   module("config-pureconfig", Settings.Module.Config.Pureconfig)
     .dependsOn(`module-core-api`)
@@ -60,6 +67,8 @@ lazy val `root` =
     .aggregate(
       `demo`,
       `integration-tests`,
+      `module-client-http4s`,
+      `module-codec-circe`,
       `module-config-pureconfig`,
       `module-core-api`,
       `module-db-api`,
