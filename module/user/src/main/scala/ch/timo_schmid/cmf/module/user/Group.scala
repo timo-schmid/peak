@@ -17,7 +17,7 @@ object Group extends AllInstances[Group, GroupId]:
   opaque type GroupId = UUID
   object GroupId extends Opaque[UUID, GroupId]
 
-  import GroupId.Iso
+  import GroupId.opaqueIso
 
   override given key: Key[Group, GroupId] =
     Key.UUID[Group, GroupId](_.id)

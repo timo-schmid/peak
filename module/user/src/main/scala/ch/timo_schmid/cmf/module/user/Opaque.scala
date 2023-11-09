@@ -14,13 +14,24 @@ abstract class Opaque[A, B](using
     to: <:<[B, A]
 ):
 
-  given Iso: entity.Iso[A, B]  = entity.Iso[A, B]
-  given Encoder: Encoder[B]    = encoder.contramap(Iso.to)
-  given Decoder: Decoder[B]    = decoder.map(Iso.from)
-  given Read: doobie.Read[B]   = doobie.Read.fromGet(get).map(Iso.from)
-  given Write: doobie.Write[B] = doobie.Write.fromPut(put).contramap(Iso.to)
+  given opaqueIso: entity.Iso[A, B]  = entity.Iso[A, B]
+  given opaqueEncoder: Encoder[B]    = encoder.contramap(opaqueIso.to)
+  given opaqueDecoder: Decoder[B]    = decoder.map(opaqueIso.from)
+  given opaqueRead: doobie.Read[B]   = doobie.Read.fromGet(get).map(opaqueIso.from)
+  given opaqueWrite: doobie.Write[B] = doobie.Write.fromPut(put).contramap(opaqueIso.to)
 
 object Opaque:
+
+  abstract class String[A](using from: <:<[java.lang.String, A], to: <:<[A, java.lang.String])
+      extends Opaque[java.lang.String, A]:
+
+    def apply(password: java.lang.String): A = password
+
+    given encoder: Encoder[A] =
+      Encoder.encodeString.contramap[A](apply)
+
+    given decoder: Decoder[A] =
+      Decoder.decodeString.map[A](apply)
 
   abstract class UUID[A](using
       from: <:<[java.util.UUID, A],
@@ -30,7 +41,7 @@ object Opaque:
     def apply(uuid: java.util.UUID): A =
       from(uuid)
 
-    def unapply(string: String): Option[A] =
+    def unapply(string: java.lang.String): Option[A] =
       Try(java.util.UUID.fromString(string))
         .map(apply)
         .toOption

@@ -19,8 +19,10 @@ case class User[F[_]](
 object User extends AllInstances[User, UserId]:
 
   opaque type UserId = UUID
-
   object UserId extends Opaque.UUID[UserId]
+
+  opaque type Password = String
+  object Password extends Opaque.String[Password]
 
   given Iso[UserId, UUID] = Iso[UserId, UUID]
 
