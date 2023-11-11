@@ -44,15 +44,29 @@ object LibraryGroups {
       "co.fs2" %% "fs2-core" % Versions.Fs2
     )
 
+  lazy val CirceFs2: SbtModules =
+    Seq(
+      "io.circe" %% "circe-fs2" % Versions.CirceFs2
+    )
+
+  lazy val Http4sCirce: SbtModules =
+    Seq(
+      "org.http4s" %% "http4s-circe" % Versions.Http4s
+    )
+
   lazy val Http4sClient: SbtModules =
     Seq(
       "org.http4s" %% "http4s-client" % Versions.Http4s
     )
 
+  lazy val Http4sEmberClient: SbtModules =
+    Seq(
+      "org.http4s" %% "http4s-ember-client" % Versions.Http4s
+    )
+
   lazy val Http4sServer: SbtModules =
     Seq(
       "org.http4s" %% "http4s-dsl"          % Versions.Http4s,
-      "org.http4s" %% "http4s-circe"        % Versions.Http4s,
       "org.http4s" %% "http4s-ember-server" % Versions.Http4s
     )
 

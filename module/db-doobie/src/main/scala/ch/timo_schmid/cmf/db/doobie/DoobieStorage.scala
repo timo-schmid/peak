@@ -35,8 +35,8 @@ class DoobieStorage[F[_]: Sync, Data[_[_]], KeyType](using
     db.transact(
       databaseQueries
         .create(data)
-        .query[Data[Id]]
-        .unique
+        .update
+        .withUniqueGeneratedKeys[Data[Id]](databaseQueries.fieldNames: _*)
     )
 
   override def update(key: KeyType, updated: Data[Id]): F[Option[Data[Id]]] =
@@ -62,6 +62,14 @@ class DoobieStorage[F[_]: Sync, Data[_[_]], KeyType](using
       case _    => raiseError(s"More than 1 row was affected for key $key")
 
   private def raiseError(message: String): F[Unit] =
-    Sync[F].raiseError(new RuntimeException(message))
+    for {
+      _     <- Sync[F].delay(println(s"Error: $message"))
+      error <- Sync[F].pure(new RuntimeException(message))
+      _     <- Sync[F].delay(error.printStackTrace())
+      xs    <- list.compile.toList
+      _     <- Sync[F].delay(println(s"List: ${xs.size}"))
+      _     <- xs.traverse_(data => Sync[F].delay[Unit](println(s"List: $data")))
+      _     <- Sync[F].raiseError(error)
+    } yield ()
 
 }

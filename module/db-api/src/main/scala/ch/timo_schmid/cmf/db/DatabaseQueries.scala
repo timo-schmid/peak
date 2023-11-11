@@ -14,6 +14,8 @@ trait DatabaseQueries[Data, KeyType]:
 
   def delete(key: KeyType): Fragment
 
+  def fieldNames: List[String]
+
 object DatabaseQueries:
 
   def apply[Data, KeyType](using

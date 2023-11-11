@@ -1,4 +1,4 @@
-package ch.timo_schmid.cmf.rest.http4s
+package ch.timo_schmid.cmf.codec.circe
 
 import cats.Id
 import io.circe.Decoder
@@ -8,13 +8,13 @@ import scala.deriving.Mirror
 
 trait CirceCodecs[Data[_[_]]]:
 
-  given circeDecoderFull: Decoder[Data[Id]]
-
   given circeEncoderFull: Encoder.AsObject[Data[Id]]
 
-  given circeDecoderPartial: Decoder[Data[Option]]
-
   given circeEncoderPartial: Encoder.AsObject[Data[Option]]
+
+  given circeDecoderFull: Decoder[Data[Id]]
+
+  given circeDecoderPartial: Decoder[Data[Option]]
 
 object CirceCodecs:
 
@@ -24,14 +24,14 @@ object CirceCodecs:
   ): CirceCodecs[Data] =
     new CirceCodecs[Data]:
 
-      override given circeDecoderFull: Decoder[Data[Id]] =
-        deriveDecoder[Data[Id]].instance
-
       override given circeEncoderFull: Encoder.AsObject[Data[Id]] =
         deriveEncoder[Data[Id]].instance
 
-      override given circeDecoderPartial: Decoder[Data[Option]] =
-        deriveDecoder[Data[Option]].instance
-
       override given circeEncoderPartial: Encoder.AsObject[Data[Option]] =
         deriveEncoder[Data[Option]].instance
+
+      override given circeDecoderFull: Decoder[Data[Id]] =
+        deriveDecoder[Data[Id]].instance
+
+      override given circeDecoderPartial: Decoder[Data[Option]] =
+        deriveDecoder[Data[Option]].instance

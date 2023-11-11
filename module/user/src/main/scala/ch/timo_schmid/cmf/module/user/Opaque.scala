@@ -41,6 +41,9 @@ object Opaque:
     def apply(uuid: java.util.UUID): A =
       from(uuid)
 
+    def random(): A =
+      apply(java.util.UUID.randomUUID())
+
     def unapply(string: java.lang.String): Option[A] =
       Try(java.util.UUID.fromString(string))
         .map(apply)

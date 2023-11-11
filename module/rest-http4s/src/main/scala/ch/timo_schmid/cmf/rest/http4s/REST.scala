@@ -1,7 +1,9 @@
 package ch.timo_schmid.cmf.rest.http4s
 
 import cats.Id
+import cats.effect.Sync
 import cats.effect.kernel.Concurrent
+import ch.timo_schmid.cmf.codec.http4s.circe.CirceHttp4sCodecs
 import ch.timo_schmid.cmf.core.api.Storage
 import ch.timo_schmid.cmf.core.entity.Key
 import ch.timo_schmid.cmf.core.entity.Merge
@@ -11,9 +13,10 @@ import shapeless3.deriving.K11
 
 trait REST[Data[_[_]]]:
 
-  def routes[F[_]: Concurrent, KeyType](using
+  def routes[F[_]: Sync: Concurrent, KeyType](using
       entityKey: Key[Data, KeyType],
-      storage: Storage[F, Data, KeyType]
+      storage: Storage[F, Data, KeyType],
+      codecs: CirceHttp4sCodecs[F, Data]
   ): HttpRoutes[F]
 
 object REST:
@@ -27,13 +30,13 @@ object REST:
       gen: K11.Generic[Data],
       genProduct: K11.ProductGeneric[Data]
   ): REST[Data] =
-    given CirceHttp4sCodecs[Data] = CirceHttp4sCodecs.derived[Data]
-    given Merge[Data]             = Merge.derived[Data]
+    given Merge[Data] = Merge.derived[Data]
     new REST[Data]:
 
-      override def routes[F[_]: Concurrent, KeyType](using
+      override def routes[F[_]: Sync: Concurrent, KeyType](using
           entityKey: Key[Data, KeyType],
-          storage: Storage[F, Data, KeyType]
+          storage: Storage[F, Data, KeyType],
+          codecs: CirceHttp4sCodecs[F, Data]
       ): HttpRoutes[F] =
         given RESTHttp4sHandler[F, Data, KeyType] = new RESTHttp4sHandler[F, Data, KeyType]
         new RESTHttp4sRoutes[F, Data, KeyType].routes

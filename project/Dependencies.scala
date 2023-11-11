@@ -3,9 +3,14 @@ import LibraryGroups.*
 import sbt.*
 
 object Dependencies {
+  lazy val IntegrationTests: SbtModules =
+    dependencies(Seq.empty, Http4sEmberClient ++ EmbeddedPostgres ++ Specs2)
   object Module {
-
-    lazy val Circe: SbtModules = dependencies(LibraryGroups.Circe)
+    lazy val Client: SbtModules = dependencies(LibraryGroups.Http4sClient)
+    object Codec  {
+      lazy val Circe: SbtModules       = dependencies(LibraryGroups.Circe)
+      lazy val Http4sCirce: SbtModules = dependencies(CirceFs2 ++ LibraryGroups.Http4sCirce)
+    }
     object Core   {
       val Api: SbtModules    = dependencies(CatsEffect ++ Fs2 ++ Log4Cats)
       val Entity: SbtModules = dependencies(Cats ++ Shapeless)
@@ -27,9 +32,6 @@ object Dependencies {
     }
     val User: SbtModules = dependencies(Seq.empty, Specs2)
   }
-
-  lazy val IntegrationTests: SbtModules =
-    dependencies(Seq.empty, EmbeddedPostgres ++ Specs2)
 
   private def dependencies(compileTime: SbtModules, testTime: SbtModules = Seq.empty): SbtModules =
     compileTime ++ testTime.map(_ % Test)

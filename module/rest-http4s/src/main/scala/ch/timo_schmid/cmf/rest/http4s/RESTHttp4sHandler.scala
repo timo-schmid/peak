@@ -3,6 +3,7 @@ package ch.timo_schmid.cmf.rest.http4s
 import cats.Id
 import cats.effect.*
 import cats.implicits.*
+import ch.timo_schmid.cmf.codec.http4s.circe.CirceHttp4sCodecs
 import ch.timo_schmid.cmf.core.api.Storage
 import ch.timo_schmid.cmf.core.entity.Key
 import ch.timo_schmid.cmf.core.entity.Merge
@@ -13,7 +14,7 @@ import org.http4s.dsl.Http4sDsl
 class RESTHttp4sHandler[F[_]: Concurrent, Data[_[_]], KeyType](using
     entityKey: Key[Data, KeyType],
     storage: Storage[F, Data, KeyType],
-    circeHttp4sCodecs: CirceHttp4sCodecs[Data],
+    circeHttp4sCodecs: CirceHttp4sCodecs[F, Data],
     merge: Merge[Data]
 ):
 

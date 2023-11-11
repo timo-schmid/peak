@@ -20,8 +20,8 @@ class DoobieDatabaseQueries[Data[_[_]], KeyType](using
     selectAllFields ++ fromTable ++ whereKey(key)
 
   override def create(data: Data[Id]): Fragment =
-    insertIntoTable ++ dbFields.fields ++
-      fr"""values""" ++ dbFields.values(data)
+    insertIntoTable ++ fr"(" ++ dbFields.fields ++ fr" )" ++
+      fr"""values (""" ++ dbFields.values(data) ++ fr" )"
 
   override def update(key: KeyType, updated: Data[Id]): Fragment =
     updateTable ++
@@ -31,6 +31,9 @@ class DoobieDatabaseQueries[Data[_[_]], KeyType](using
 
   override def delete(key: KeyType): Fragment =
     deleteFrom ++ whereKey(key)
+
+  override def fieldNames: List[String] =
+    dbFields.fieldNames
 
   private val tableName: Fragment =
     Fragment.const(table.name)
@@ -51,4 +54,4 @@ class DoobieDatabaseQueries[Data[_[_]], KeyType](using
     fr"delete" ++ fromTable
 
   private def whereKey(key: KeyType): Fragment =
-    fr"where id = $key"
+    fr" where id = $key"

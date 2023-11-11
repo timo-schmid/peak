@@ -43,14 +43,11 @@ abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
       }
 
   private def keepServiceRunning(log: Logger[IO]): IO[ExitCode] =
-    runService(log)
-      .handleErrorWith(errorHandler(log))
-
-  private def runService(log: Logger[IO]): IO[ExitCode] =
-    for {
+    (for {
       _ <- log.info(s"Running ${buildInfo.name} version ${buildInfo.version}")
       _ <- never
-    } yield ExitCode.Success
+    } yield ExitCode.Success)
+      .handleErrorWith(errorHandler(log))
 
   private def errorHandler(log: Logger[IO])(error: Throwable): IO[ExitCode] =
     log.error(error)(error.getMessage) *>

@@ -2,6 +2,7 @@ package ch.timo_schmid.cmf.module.user
 
 import cats.Id
 import cats.effect.*
+import ch.timo_schmid.cmf.codec.http4s.circe.CirceHttp4sCodecs
 import ch.timo_schmid.cmf.core.api.Storage
 import ch.timo_schmid.cmf.core.entity.*
 import ch.timo_schmid.cmf.db.Database
@@ -33,17 +34,17 @@ object AllInstances:
     given restHttp4sHandler[F[_]: Concurrent](using
         Key[Data, KeyType],
         Storage[F, Data, KeyType],
-        CirceHttp4sCodecs[Data],
+        CirceHttp4sCodecs[F, Data],
         ToPartial[Data],
         Merge[Data]
     ): RESTHttp4sHandler[F, Data, KeyType] =
       new RESTHttp4sHandler[F, Data, KeyType]
 
-    given restHttp4sRoutes[F[_]: Async: Sync](using
+    given restHttp4sRoutes[F[_]: Concurrent](using
         RESTHttp4sHandler[F, Data, KeyType],
         Key[Data, KeyType],
         Database[F, ConnectionIO],
-        CirceHttp4sCodecs[Data],
+        CirceHttp4sCodecs[F, Data],
         ToPartial[Data],
         Merge[Data]
     ): RESTHttp4sRoutes[F, Data, KeyType] =

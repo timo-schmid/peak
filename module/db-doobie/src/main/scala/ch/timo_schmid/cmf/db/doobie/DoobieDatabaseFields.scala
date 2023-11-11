@@ -11,6 +11,8 @@ import shapeless3.deriving.Labelling
 trait DoobieDatabaseFields[Data[_[_]]]:
 
   def fields: Fragment
+  
+  def fieldNames: List[String]
 
   def values(data: Data[cats.Id]): Fragment
 
@@ -29,9 +31,12 @@ object DoobieDatabaseFields:
   ): DoobieDatabaseFields[Data] with
 
     def fields: Fragment =
-      labelling.elemLabels.toList
+      fieldNames
         .map(Fragment.const0(_))
         .intercalate(fr0", ")
+
+    override def fieldNames: List[String] =
+      labelling.elemLabels.toList
 
     def values(data: Data[cats.Id]): Fragment =
       inst
