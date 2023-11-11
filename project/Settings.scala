@@ -14,7 +14,7 @@ object Settings {
       val Http4s: SbtSettings = Common(Dependencies.Module.Client)
     }
     object Codec  {
-      val Circe: SbtSettings = Common(Dependencies.Module.Codec.Circe)
+      val Circe: SbtSettings       = Common(Dependencies.Module.Codec.Circe)
       val Http4sCirce: SbtSettings = Common(Dependencies.Module.Codec.Http4sCirce)
     }
     object Config {
