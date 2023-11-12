@@ -13,12 +13,22 @@ object LibraryGroups {
       "org.typelevel" %% "cats-effect" % Versions.CatsEffect
     )
 
+  lazy val CatsEffectTesting: SbtModules =
+    Seq(
+      "org.typelevel" %% "cats-effect-testing-specs2" % Versions.CatsEffectTesting
+    )
+
   lazy val Circe: SbtModules =
     Seq(
       "io.circe" %% "circe-core"    % Versions.Circe,
       "io.circe" %% "circe-generic" % Versions.Circe,
       "io.circe" %% "circe-jawn"    % Versions.Circe,
       "io.circe" %% "circe-numbers" % Versions.Circe
+    )
+
+  lazy val CirceFs2: SbtModules =
+    Seq(
+      "io.circe" %% "circe-fs2" % Versions.CirceFs2
     )
 
   lazy val Doobie: SbtModules =
@@ -42,11 +52,6 @@ object LibraryGroups {
   lazy val Fs2: SbtModules =
     Seq(
       "co.fs2" %% "fs2-core" % Versions.Fs2
-    )
-
-  lazy val CirceFs2: SbtModules =
-    Seq(
-      "io.circe" %% "circe-fs2" % Versions.CirceFs2
     )
 
   lazy val Http4sCirce: SbtModules =
@@ -105,10 +110,9 @@ object LibraryGroups {
 
   lazy val Specs2: SbtModules =
     Seq(
-      "org.specs2"     %% "specs2-core"                % Versions.Specs2,
-      "org.specs2"     %% "specs2-scalacheck"          % Versions.Specs2,
-      "org.scalacheck" %% "scalacheck"                 % Versions.ScalaCheck,
-      "org.typelevel"  %% "cats-effect-testing-specs2" % Versions.CatsEffectTesting
+      "org.specs2"     %% "specs2-core"       % Versions.Specs2,
+      "org.specs2"     %% "specs2-scalacheck" % Versions.Specs2,
+      "org.scalacheck" %% "scalacheck"        % Versions.ScalaCheck
     )
 
 }

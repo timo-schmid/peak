@@ -14,44 +14,40 @@ class DoobieDatabaseQueries[Data[_[_]], KeyType](using
 ) extends DatabaseQueries[Data[Id], KeyType]:
 
   override def select: Fragment =
-    selectAllFields ++ fromTable
+    fr0"$SelectAllFields $FromTable"
 
   override def byKey(key: KeyType): Fragment =
-    selectAllFields ++ fromTable ++ whereKey(key)
+    fr0"$SelectAllFields $FromTable ${whereKey(key)}"
 
   override def create(data: Data[Id]): Fragment =
-    insertIntoTable ++ fr"(" ++ dbFields.fields ++ fr" )" ++
-      fr"""values (""" ++ dbFields.values(data) ++ fr" )"
+    fr0"$InsertIntoTable (${dbFields.fields}) VALUES (${dbFields.values(data)})"
 
   override def update(key: KeyType, updated: Data[Id]): Fragment =
-    updateTable ++
-      fr"set" ++
-      dbFields.setValues(updated) ++
-      whereKey(key)
+    fr0"$UpdateTable SET ${dbFields.setValues(updated)} ${whereKey(key)}"
 
   override def delete(key: KeyType): Fragment =
-    deleteFrom ++ whereKey(key)
+    fr0"$DeleteFrom ${whereKey(key)}"
 
   override def fieldNames: List[String] =
     dbFields.fieldNames
 
-  private val tableName: Fragment =
-    Fragment.const(table.name)
+  private val TableName: Fragment =
+    Fragment.const0(table.name)
 
-  private val selectAllFields: Fragment =
-    fr"select" ++ dbFields.fields ++ fr""
+  private val SelectAllFields: Fragment =
+    fr0"SELECT ${dbFields.fields}"
 
-  private val fromTable: Fragment =
-    fr"from" ++ tableName
+  private val FromTable: Fragment =
+    fr0"FROM $TableName"
 
-  private val insertIntoTable: Fragment =
-    fr"insert into" ++ tableName
+  private val InsertIntoTable: Fragment =
+    fr0"INSERT INTO $TableName"
 
-  private val updateTable: Fragment =
-    fr"update" ++ tableName
+  private val UpdateTable: Fragment =
+    fr0"UPDATE $TableName"
 
-  private val deleteFrom: Fragment =
-    fr"delete" ++ fromTable
+  private val DeleteFrom: Fragment =
+    fr0"DELETE $FromTable"
 
   private def whereKey(key: KeyType): Fragment =
-    fr" where id = $key"
+    fr0" WHERE ID = $key"

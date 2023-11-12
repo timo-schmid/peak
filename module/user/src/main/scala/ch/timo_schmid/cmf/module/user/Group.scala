@@ -16,7 +16,7 @@ case class Group[F[_]](id: F[GroupId], label: F[String]) derives REST, CirceCode
 object Group extends AllInstances[Group, GroupId]:
 
   opaque type GroupId = UUID
-  object GroupId extends Opaque[UUID, GroupId]
+  object GroupId extends Opaque.UUID[GroupId]
 
   import GroupId.opaqueIso
 

@@ -4,7 +4,7 @@ import sbt.*
 
 object Dependencies {
   lazy val IntegrationTests: SbtModules =
-    dependencies(Seq.empty, Http4sEmberClient ++ EmbeddedPostgres ++ Specs2)
+    dependencies(Seq.empty, CatsEffectTesting ++ Http4sEmberClient ++ EmbeddedPostgres ++ Specs2)
   object Module {
     lazy val Client: SbtModules = dependencies(LibraryGroups.Http4sClient)
     object Codec  {
@@ -19,7 +19,7 @@ object Dependencies {
       val Api: SbtModules    = dependencies(Fs2 ++ LibraryGroups.Doobie ++ LibraryGroups.Ip4s)
       val Doobie: SbtModules = dependencies(LibraryGroups.Doobie ++ Flyway, Specs2)
     }
-    val Di: SbtModules = dependencies(CatsEffect, Specs2)
+    val Di: SbtModules = dependencies(CatsEffect, CatsEffectTesting ++ Specs2)
     object Config {
       lazy val Pureconfig: SbtModules = dependencies(LibraryGroups.Pureconfig)
     }

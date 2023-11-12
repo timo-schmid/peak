@@ -3,10 +3,11 @@ package ch.timo_schmid.peak.testing.integration
 import cats.effect.IO
 import cats.effect.Resource
 import ch.timo_schmid.cmf.client.http4s.Client
-import ch.timo_schmid.cmf.module.user.User
-import ch.timo_schmid.cmf.module.user.User.UserId
+import ch.timo_schmid.cmf.codec.circe.CirceCodecs
+import ch.timo_schmid.cmf.core.entity.Key
 import com.comcast.ip4s.Port
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
+import org.http4s.Uri
 import org.http4s.ember.client.EmberClientBuilder
 
 object Utils:
@@ -25,10 +26,13 @@ object Utils:
       )
     )
 
-  def userApiClient(port: Port): Resource[IO, Client[IO, User, UserId]] =
+  def http4sClient[Data[_[_]], KeyType](port: Port, endpoint: String)(using
+      CirceCodecs[Data],
+      Key[Data, KeyType]
+  ): Resource[IO, Client[IO, Data, KeyType]] =
     EmberClientBuilder.default[IO].build.map { http4sClient =>
-      Client[IO, User, UserId](
+      Client[IO, Data, KeyType](
         http4sClient,
-        org.http4s.Uri.unsafeFromString(s"http://localhost:$port/api/users")
+        Uri.unsafeFromString(s"http://localhost:$port/api/$endpoint")
       )
     }

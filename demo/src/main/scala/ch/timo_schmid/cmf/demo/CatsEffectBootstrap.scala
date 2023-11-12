@@ -5,9 +5,11 @@ import cats.effect.*
 import cats.effect.IO.*
 import cats.implicits.*
 import ch.timo_schmid.cmf.core.api.Bootstrap
+import ch.timo_schmid.cmf.core.api.Bootstrap.ServiceContext
 import ch.timo_schmid.cmf.core.api.LoggerProvider
 import org.typelevel.log4cats.Logger
 import reflect.Selectable.reflectiveSelectable
+import scala.concurrent.duration.*
 
 abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
     buildInfo: Any {
@@ -32,26 +34,37 @@ abstract class CatsEffectBootstrap[Config: Show, Clients: Show, Services: Show](
         info(_)(s"Starting ${buildInfo.name} version ${buildInfo.version}")
       )
       .flatMap { log =>
-        for {
+        for
           config   <- bootstrap.loadConfig(buildInfo.name)
           _        <- info(log)(s"Loaded configuration: ${config.show}")
           clients  <- bootstrap.createClients(config)
           _        <- info(log)(s"Created clients: ${clients.show}")
-          services <- bootstrap.createServices(config)
+          services <- bootstrap.createServices(ServiceContext(config, clients, loggerProvider))
           _        <- info(log)(s"Created services: ${services.show}")
-        } yield (log, config, clients, services)
+        yield (log, config, clients, services)
       }
 
   private def keepServiceRunning(log: Logger[IO]): IO[ExitCode] =
     (for {
-      _ <- log.info(s"Running ${buildInfo.name} version ${buildInfo.version}")
-      _ <- never
+      _         <- log.info(s"Running ${buildInfo.name} version ${buildInfo.version}")
+      startTime <- unixTimestamp
+      _         <- logRunning(log)(startTime)
     } yield ExitCode.Success)
       .handleErrorWith(errorHandler(log))
 
+  private def logRunning(log: Logger[IO])(startTime: Long): IO[Unit] =
+    for
+      now <- unixTimestamp
+      _   <- log.info(s"Server is up for ${now - startTime} seconds")
+      _   <- IO.sleep(1.second)
+      _   <- logRunning(log)(startTime)
+    yield ()
+
+  private def unixTimestamp: IO[Long] =
+    Clock[IO].realTime.map(_.toSeconds)
+
   private def errorHandler(log: Logger[IO])(error: Throwable): IO[ExitCode] =
-    log.error(error)(error.getMessage) *>
-      pure(ExitCode.Error)
+    log.error(error)(error.getMessage).as(ExitCode.Error)
 
   private def info(log: Logger[IO])(message: => String): Resource[IO, Unit] =
     Resource.eval(log.info(message))

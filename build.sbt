@@ -42,7 +42,7 @@ lazy val `module-db-api` =
 
 lazy val `module-db-doobie` =
   module("db-doobie", Settings.Module.Db.Doobie)
-    .dependsOn(`module-db-api`)
+    .dependsOn(`module-db-api`, `module-log-slf4j`)
 
 lazy val `module-di` =
   module("di", Settings.Module.Di)

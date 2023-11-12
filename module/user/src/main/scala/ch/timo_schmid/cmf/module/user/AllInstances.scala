@@ -3,7 +3,7 @@ package ch.timo_schmid.cmf.module.user
 import cats.Id
 import cats.effect.*
 import ch.timo_schmid.cmf.codec.http4s.circe.CirceHttp4sCodecs
-import ch.timo_schmid.cmf.core.api.Storage
+import ch.timo_schmid.cmf.core.api.*
 import ch.timo_schmid.cmf.core.entity.*
 import ch.timo_schmid.cmf.db.Database
 import ch.timo_schmid.cmf.db.DatabaseQueries
@@ -59,11 +59,11 @@ object AllInstances:
     ): DatabaseQueries[Data[Id], KeyType] =
       new DoobieDatabaseQueries[Data, KeyType]
 
-    given doobieStorage[F[_]: Sync](using
-        database: Database[F, ConnectionIO],
+    given doobieStorageProvider[F[_]: Sync](using
         databaseQueries: DatabaseQueries[Data[Id], KeyType],
         writeKey: Write[KeyType],
         readData: Read[Data[Id]],
-        writeData: Write[Data[Id]]
-    ): Storage[F, Data, KeyType] =
-      new DoobieStorage[F, Data, KeyType]
+        writeData: Write[Data[Id]],
+        loggerProvider: LoggerProvider[F]
+    ): Provider[F, Database[F, ConnectionIO], Storage[F, Data, KeyType]] =
+      DoobieStorage.provider[F, Data, KeyType]
